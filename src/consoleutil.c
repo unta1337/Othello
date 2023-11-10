@@ -33,3 +33,24 @@ void clear_console() {
     system("clear");
 #endif
 }
+
+void set_color_red() {
+#ifdef _WIN32
+#else
+    printf("\033[1;31m");
+#endif
+}
+
+void set_color_blue() {
+#ifdef _WIN32
+#else
+    printf("\033[1;34m");
+#endif
+}
+
+void set_color_reset() {
+#ifdef _WIN32
+#else
+    printf("\033[0m");
+#endif
+}

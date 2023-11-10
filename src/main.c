@@ -21,7 +21,12 @@ int main() {
         case 'k': board_move_cursor(&board, UP); break;
         case 'l': board_move_cursor(&board, RIGHT); break;
 
-        case '\n': if (board_is_valid_spot(&board, curr)) {
+#ifdef _WIN32
+        case '\r':
+#else
+        case '\n':
+#endif
+                  if (board_is_valid_spot(&board, curr)) {
                        board_set(&board, curr);
 
                        curr = curr == PLAYER1

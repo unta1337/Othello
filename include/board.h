@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "player.h"
+#include "consoleutil.h"
 
 typedef struct {
     size_t row;

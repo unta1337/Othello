@@ -88,9 +88,29 @@ void board_print(const board_t* ths, const player_t current_player) {
                                : player_symbols[ths->board[r][c]];
 
             if (r == ths->cursor.row && c == ths->cursor.col) {
-                printf("<%c>", curr_symbol);
+                printf("<");
             } else {
-                printf("[%c]", curr_symbol);
+                printf("[");
+            }
+
+            if (curr_symbol == player_symbols[PLAYER1]) {
+                set_color_red();
+            } else if (curr_symbol == player_symbols[PLAYER2]) {
+                set_color_blue();
+            }
+
+            if (r == ths->cursor.row && c == ths->cursor.col) {
+                printf("%c", curr_symbol);
+            } else {
+                printf("%c", curr_symbol);
+            }
+
+            set_color_reset();
+
+            if (r == ths->cursor.row && c == ths->cursor.col) {
+                printf(">");
+            } else {
+                printf("]");
             }
         }
         printf("\n");

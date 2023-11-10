@@ -13,4 +13,8 @@
 int getchar_no_echo();
 void clear_console();
 
+void set_color_red();
+void set_color_blue();
+void set_color_reset();
+
 #endif
