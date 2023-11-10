@@ -1,62 +1,78 @@
 #include "board.h"
 
-player_t board[ROWS][COLS] = { 0, };
-cursor_t cursor = { 0, };
+board_t board_create(const size_t rows, const size_t cols) {
+    board_t ths = {
+        .board = (player_t**)malloc(rows * cols * sizeof(player_t*)),
+        .rows = rows,
+        .cols = cols,
+        .cursor = {
+            .row = rows / 2 - 1,
+            .col = cols / 2 - 1
+        }
+    };
 
-void board_init() {
-    memset(board, 0, ROWS * COLS * sizeof(player_t));
-    memset(&cursor, 0, sizeof(cursor_t));
+    for (size_t i = 0; i < rows; i++) {
+        ths.board[i] = (player_t*)calloc(cols, sizeof(player_t));
+    }
 
-    board[ROWS / 2 - 1][COLS / 2 - 1] = PLAYER1;
-    board[ROWS / 2][COLS / 2] = PLAYER1;
+    ths.board[rows / 2 - 1][cols / 2 - 1] = PLAYER1;
+    ths.board[rows / 2][cols / 2] = PLAYER1;
 
-    board[ROWS / 2 - 1][COLS / 2] = PLAYER2;
-    board[ROWS / 2][COLS / 2 - 1] = PLAYER2;
+    ths.board[rows / 2 - 1][cols / 2] = PLAYER2;
+    ths.board[rows / 2][cols / 2 - 1] = PLAYER2;
 
-    cursor.row = ROWS / 2 - 1;
-    cursor.col = COLS / 2 - 1;
+    ths.cursor.row = rows / 2 - 1;
+    ths.cursor.col = cols / 2 - 1;
+
+    return ths;
 }
 
-void board_print() {
-    for (size_t r = 0; r < ROWS; r++) {
-        for (size_t c = 0; c < COLS; c++) {
-            if (r == cursor.row && c == cursor.col) {
-                printf("<%c>", player_symbols[board[r][c]]);
+void board_delete(board_t* ths) {
+    for (size_t i = 0; i < ths->rows; i++) {
+        free(ths->board[i]);
+    }
+    free(ths->board);
+}
+
+void board_print(const board_t* ths, const player_t current_player) {
+    printf("Current Player: %s\n\n", player_names[current_player]);
+
+    for (size_t r = 0; r < ths->rows; r++) {
+        for (size_t c = 0; c < ths->cols; c++) {
+            if (r == ths->cursor.row && c == ths->cursor.col) {
+                printf("<%c>", player_symbols[ths->board[r][c]]);
             } else {
-                printf("[%c]", player_symbols[board[r][c]]);
+                printf("[%c]", player_symbols[ths->board[r][c]]);
             }
         }
         printf("\n");
     }
 }
 
-bool board_set(size_t row, size_t col, player_t player) {
-    if (row >= ROWS) {
-        fprintf(stderr, "Error: Board row out of bound: %zu, %zu.\n", row, ROWS);
-        return false;
-    }
-    if (col >= COLS) {
-        fprintf(stderr, "Error: Board row out of bound: %zu, %zu.\n", col, COLS);
-        return false;
-    }
-
-    board[row][col] = player;
-
-    return true;
+void board_set(board_t* ths, const player_t player) {
+    ths->board[ths->cursor.row][ths->cursor.col] = player;
 }
 
-player_t board_check_winner() {
+void board_move_cursor(board_t* ths, const direction_t dir) {
+    ths->cursor.row += directions[dir][0];
+    ths->cursor.row %= ths->rows;
+
+    ths->cursor.col += directions[dir][1];
+    ths->cursor.col %= ths->cols;
+}
+
+player_t board_check_winner(const board_t* ths) {
     size_t p1 = 0;
     size_t p2 = 0;
 
-    for (size_t r = 0; r < ROWS; r++) {
-        for (size_t c = 0; c < COLS; c++) {
-            p1 += board[r][c] == PLAYER1;
-            p2 += board[r][c] == PLAYER2;
+    for (size_t r = 0; r < ths->rows; r++) {
+        for (size_t c = 0; c < ths->cols; c++) {
+            p1 += ths->board[r][c] == PLAYER1;
+            p2 += ths->board[r][c] == PLAYER2;
         }
     }
 
-    if (p1 + p2 < ROWS * COLS) {
+    if (p1 + p2 < ths->rows * ths->cols) {
         return NONE;
     } else if (p1 == p2) {
         return ELSE;

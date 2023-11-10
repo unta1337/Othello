@@ -2,46 +2,47 @@
 #define __BOARD_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "config.h"
-
-#if BOARD_ROWS % 2 == 1 || BOARD_ROWS_COLS % 2 == 1
-#error BOARD_ROWS and BOARD_ROWS must be an even integer.
-#endif
-
-#define ROWS (size_t)BOARD_ROWS
-#define COLS (size_t)BOARD_COLS
-
-typedef enum {
-    NONE,
-    PLAYER1,
-    PLAYER2,
-    ELSE,
-    NUM_PLAYER_KIND
-} player_t;
+#include "player.h"
 
 typedef struct {
     size_t row;
     size_t col;
 } cursor_t;
 
-static const char player_symbols[NUM_PLAYER_KIND] = {
-    [NONE] = ' ',
-    [PLAYER1] = 'O',
-    [PLAYER2] = 'X',
-    [ELSE] = 'E'
+typedef struct {
+    player_t** board;
+    size_t rows;
+    size_t cols;
+    cursor_t cursor;
+} board_t;
+
+typedef enum {
+    LEFT,
+    DOWN,
+    UP,
+    RIGHT,
+    NUM_DIRECTION_T
+} direction_t;
+
+static const int directions[NUM_DIRECTION_T][2] = {
+    [LEFT] = { 0, -1 },
+    [DOWN] = { 1, 0 },
+    [UP] = { -1, 0 },
+    [RIGHT] = { 0, 1 }
 };
 
-extern player_t board[ROWS][COLS];
-extern cursor_t cursor;
+board_t board_create(const size_t rows, const size_t cols);
+void board_delete(board_t* ths);
 
-void board_init();
-void board_print();
+void board_print(const board_t* ths, player_t current_player);
 
-bool board_set(size_t row, size_t col, player_t player);
+void board_set(board_t* ths, const player_t player);
+void board_move_cursor(board_t* ths, const direction_t dir);
 
-player_t board_check_winner();
+player_t board_check_winner(const board_t* ths);
 
 #endif
