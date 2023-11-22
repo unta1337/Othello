@@ -44,12 +44,14 @@ static const int directions[CAP_DIRECTION_T][2] = {
 board_t board_create(const size_t rows, const size_t cols);
 void board_delete(board_t* ths);
 
+void board_update(const board_t* ths, player_t current_player);
 void board_print(const board_t* ths, player_t current_player);
 
 void board_set(board_t* ths, const player_t player);
 void board_move_cursor(board_t* ths, const direction_t dir);
 
-bool board_is_valid_spot(const board_t* ths, const player_t current_player);
+bool board_is_valid_spot(const board_t* ths, const player_t player);
+bool board_has_valid_spot(const board_t* ths, const player_t player);
 bool board_is_full(const board_t* ths);
 
 #endif

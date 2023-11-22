@@ -13,6 +13,13 @@ int main() {
 
     while ((winner = board_is_full(&board)) == NONE) {
         clear_console();
+
+        board_update(&board, curr);
+        // if (!board_has_valid_spot(&board, curr)) {
+        //     curr ^= SWITCH_PLAYER;
+        //     continue;
+        // }
+
         board_print(&board, curr);
 
         switch (getchar_no_echo()) {
@@ -26,12 +33,9 @@ int main() {
 #else
         case '\n':
 #endif
-                  if (board_is_valid_spot(&board, curr)) {
+                   if (board_is_valid_spot(&board, curr)) {
                        board_set(&board, curr);
-
-                       curr = curr == PLAYER1
-                              ? PLAYER2
-                              : PLAYER1;
+                       curr ^= SWITCH_PLAYER;
                    }
                    break;
 

@@ -21,6 +21,8 @@ bool __is_valid_spot_dir(const board_t* ths,
         return false;
     } else if (ths->board[row][col] == NONE) {
         return false;
+    } else if (ths->board[row][col] & IS_VALID) {
+        return false;
     }
 
     return count > 0;
@@ -29,7 +31,7 @@ bool __is_valid_spot_dir(const board_t* ths,
 bool __is_valid_spot(const board_t* ths,
                      size_t row, size_t col,
                      const player_t current_player) {
-    if (ths->board[row][col] != NONE) {
+    if (ths->board[row][col] == PLAYER1 || ths->board[row][col] == PLAYER2) {
         return false;
     }
 
@@ -78,14 +80,29 @@ void board_delete(board_t* ths) {
     free(ths->board);
 }
 
+void board_update(const board_t* ths, player_t current_player) {
+    for (size_t r = 0; r < ths->rows; r++) {
+        for (size_t c = 0; c < ths->cols; c++) {
+            if (ths->board[r][c] & IS_VALID) {
+                ths->board[r][c] = NONE;
+            }
+
+            if (__is_valid_spot(ths, r, c, current_player)) {
+                ths->board[r][c] = current_player | IS_VALID;
+            }
+        }
+    }
+}
+
 void board_print(const board_t* ths, const player_t current_player) {
     printf("Current Player: %c\n\n", player_symbols[current_player]);
 
     for (size_t r = 0; r < ths->rows; r++) {
         for (size_t c = 0; c < ths->cols; c++) {
-            char curr_symbol = __is_valid_spot(ths, r, c, current_player)
-                               ? player_symbols[current_player] ^ 32
-                               : player_symbols[ths->board[r][c]];
+            char curr_symbol = player_symbols[ths->board[r][c]];
+            // char curr_symbol = __is_valid_spot(ths, r, c, current_player)
+            //                    ? player_symbols[current_player] ^ 32
+            //                    : player_symbols[ths->board[r][c]];
 
             if (r == ths->cursor.row && c == ths->cursor.col) {
                 printf("<");
@@ -129,8 +146,20 @@ void board_move_cursor(board_t* ths, const direction_t dir) {
     ths->cursor.col %= ths->cols;
 }
 
-bool board_is_valid_spot(const board_t* ths, const player_t current_player) {
-    return __is_valid_spot(ths, ths->cursor.row, ths->cursor.col, current_player);
+bool board_is_valid_spot(const board_t* ths, const player_t player) {
+    return ths->board[ths->cursor.row][ths->cursor.col] == (player | IS_VALID);
+}
+
+bool board_has_valid_spot(const board_t* ths, const player_t player) {
+    for (size_t r = 0; r < ths->rows; r++) {
+        for (size_t c = 0; c < ths->cols; c++) {
+            if (ths->board[r][c] == (player | IS_VALID)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool board_is_full(const board_t* ths) {
