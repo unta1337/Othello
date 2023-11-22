@@ -196,12 +196,26 @@ bool board_has_valid_spot(const board_t* ths, const player_t player) {
 }
 
 bool board_is_full(const board_t* ths) {
-    size_t none_count = 0;
+    size_t count = 0;
     for (size_t r = 0; r < ths->rows; r++) {
         for (size_t c = 0; c < ths->cols; c++) {
-            none_count += ths->board[r][c] == NONE;
+            count += (ths->board[r][c] == NONE) || (ths->board[r][c] & IS_VALID);
         }
     }
 
-    return none_count == ths->rows * ths->cols;
+    return count == 0;
+}
+
+player_t board_has_winner(const board_t* ths) {
+    size_t player1_count = 0;
+    size_t player2_count = 0;
+
+    for (size_t r = 0; r < ths->rows; r++) {
+        for (size_t c = 0; c < ths->cols; c++) {
+            player1_count += ths->board[r][c] == PLAYER1;
+            player2_count += ths->board[r][c] == PLAYER2;
+        }
+    }
+
+    return player1_count == player2_count ? NONE : (player1_count > player2_count ? PLAYER1 : PLAYER2);
 }

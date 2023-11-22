@@ -54,5 +54,6 @@ void board_move_cursor(board_t* ths, const direction_t dir);
 bool board_is_valid_spot(const board_t* ths, const player_t player);
 bool board_has_valid_spot(const board_t* ths, const player_t player);
 bool board_is_full(const board_t* ths);
+player_t board_has_winner(const board_t* ths);
 
 #endif

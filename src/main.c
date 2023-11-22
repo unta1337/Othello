@@ -9,9 +9,8 @@ int main() {
     board_t board = board_create(rows, cols);
 
     player_t curr = PLAYER1;
-    player_t winner = NONE;
 
-    while ((winner = board_is_full(&board)) == NONE) {
+    while (!board_is_full(&board)) {
         clear_console();
 
         board_update(&board, curr);
@@ -44,6 +43,7 @@ int main() {
         }
     }
 while_end:;
+    player_t winner = board_has_winner(&board);
 
     clear_console();
     board_print(&board, curr);
@@ -52,7 +52,15 @@ while_end:;
         printf("===");
     }
     printf("\nDone!\n");
-    printf("%c!\n", winner == NONE ? 'T' : player_symbols[winner]);
+    printf("Winner: ");
+    switch (winner) {
+    case NONE:
+        printf("NONE!\n");
+        break;
+    default:
+        printf("%c!\n", player_symbols[winner]);
+        break;
+    }
 
     return 0;
 }
