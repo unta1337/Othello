@@ -46,6 +46,27 @@ bool __is_valid_spot(const board_t* ths,
            || __is_valid_spot_dir(ths, row, col, current_player, DOWN | RIGHT);
 }
 
+void __flip_dir(const board_t* ths, player_t current_player, direction_t dir) {
+    if (!__is_valid_spot_dir(ths,
+                             ths->cursor.row, ths->cursor.col,
+                             current_player, dir)) {
+        return;
+    }
+
+    size_t row = ths->cursor.row + directions[dir][0];
+    size_t col = ths->cursor.col + directions[dir][1];
+
+    player_t opposite_player = current_player == PLAYER1 ? PLAYER2 : PLAYER1;
+
+    while (row < ths->rows && col < ths->cols
+           && ths->board[row][col] == opposite_player) {
+        ths->board[row][col] = current_player;
+
+        row += directions[dir][0];
+        col += directions[dir][1];
+    }
+}
+
 board_t board_create(const size_t rows, const size_t cols) {
     board_t ths = {
         .board = (player_t**)malloc(rows * cols * sizeof(player_t*)),
@@ -61,11 +82,11 @@ board_t board_create(const size_t rows, const size_t cols) {
         ths.board[i] = (player_t*)calloc(cols, sizeof(player_t));
     }
 
-    ths.board[rows / 2 - 1][cols / 2 - 1] = PLAYER1;
-    ths.board[rows / 2][cols / 2] = PLAYER1;
+    ths.board[rows / 2 - 1][cols / 2] = PLAYER1;
+    ths.board[rows / 2][cols / 2 - 1] = PLAYER1;
 
-    ths.board[rows / 2 - 1][cols / 2] = PLAYER2;
-    ths.board[rows / 2][cols / 2 - 1] = PLAYER2;
+    ths.board[rows / 2 - 1][cols / 2 - 1] = PLAYER2;
+    ths.board[rows / 2][cols / 2] = PLAYER2;
 
     ths.cursor.row = rows / 2 - 1;
     ths.cursor.col = cols / 2 - 1;
@@ -92,6 +113,18 @@ void board_update(const board_t* ths, player_t current_player) {
             }
         }
     }
+}
+
+void flip(const board_t* ths, player_t current_player) {
+    __flip_dir(ths, current_player, LEFT);
+    __flip_dir(ths, current_player, UP);
+    __flip_dir(ths, current_player, DOWN);
+    __flip_dir(ths, current_player, RIGHT);
+
+    __flip_dir(ths, current_player, UP | LEFT);
+    __flip_dir(ths, current_player, UP | RIGHT);
+    __flip_dir(ths, current_player, DOWN | LEFT);
+    __flip_dir(ths, current_player, DOWN | RIGHT);
 }
 
 void board_print(const board_t* ths, const player_t current_player) {
@@ -163,13 +196,12 @@ bool board_has_valid_spot(const board_t* ths, const player_t player) {
 }
 
 bool board_is_full(const board_t* ths) {
+    size_t none_count = 0;
     for (size_t r = 0; r < ths->rows; r++) {
         for (size_t c = 0; c < ths->cols; c++) {
-            if (ths->board[r][c] == NONE) {
-                return false;
-            }
+            none_count += ths->board[r][c] == NONE;
         }
     }
 
-    return true;
+    return none_count == ths->rows * ths->cols;
 }

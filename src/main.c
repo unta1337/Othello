@@ -15,10 +15,10 @@ int main() {
         clear_console();
 
         board_update(&board, curr);
-        // if (!board_has_valid_spot(&board, curr)) {
-        //     curr ^= SWITCH_PLAYER;
-        //     continue;
-        // }
+        if (!board_has_valid_spot(&board, curr)) {
+            curr ^= SWITCH_PLAYER;
+            continue;
+        }
 
         board_print(&board, curr);
 
@@ -35,6 +35,7 @@ int main() {
 #endif
                    if (board_is_valid_spot(&board, curr)) {
                        board_set(&board, curr);
+                       flip(&board, curr);
                        curr ^= SWITCH_PLAYER;
                    }
                    break;
@@ -51,6 +52,7 @@ while_end:;
         printf("===");
     }
     printf("\nDone!\n");
+    printf("%c!\n", winner == NONE ? 'T' : player_symbols[winner]);
 
     return 0;
 }
