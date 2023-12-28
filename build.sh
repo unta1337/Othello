@@ -32,6 +32,7 @@ then
                    "${SOURCE_PREFIX}main.c" \
                    "${SOURCE_PREFIX}board.c" \
                    "${SOURCE_PREFIX}consoleutil.c" \
+                   "${SOURCE_PREFIX}framebuffer.c" \
                 -I $INCLUDE_PATH
 elif [ $1 == "run" ]
 then

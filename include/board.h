@@ -12,13 +12,13 @@
 typedef struct {
     size_t row;
     size_t col;
-} cursor_t;
+} pos_t;
 
 typedef struct {
     player_t** board;
     size_t rows;
     size_t cols;
-    cursor_t cursor;
+    pos_t cursor;
 } board_t;
 
 typedef enum {
